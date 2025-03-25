@@ -210,8 +210,7 @@ function processChannelFeed(channelName, channelId, channels, channelIcon, disco
       const feedPublished = formatDate(items[i].getChildText('published', atom));
       const feedVideoId = items[i].getChildText('videoId', youtubeNamespace);
 
-      const [isNewVideo, liveBroadcastContent, scheduledStartTime, actualStartTime, convertedDuration] =
-        getVideoInfoFromSheet(globalSheetData, feedVideoId);
+      const [isNewVideo, liveBroadcastContent, scheduledStartTime, actualStartTime, convertedDuration] = getVideoInfoFromSheet(globalSheetData, feedVideoId);
 
       // --- liveBroadcastContentが 'none' の場合は処理を行わずスキップ ---
       if (liveBroadcastContent === 'none') {
@@ -256,8 +255,7 @@ function processChannelFeed(channelName, channelId, channels, channelIcon, disco
   }
 
   if (newVideoDataRows.length > 0) {
-    videoDataSheet.getRange(videoDataSheet.getLastRow() + 1, 1, newVideoDataRows.length, newVideoDataRows[0].length)
-      .setValues(newVideoDataRows);
+    videoDataSheet.getRange(videoDataSheet.getLastRow() + 1, 1, newVideoDataRows.length, newVideoDataRows[0].length).setValues(newVideoDataRows);
   }
   return return_info;
 }
@@ -299,6 +297,7 @@ function getVideoInfoFromSheet(sheetData, videoId) {
     var apiScheduledStartTime = videoInfo.scheduledStartTime;
     var apiActualStartTime = videoInfo.actualStartTime;
     var apiDuration = convertDurationToHHMMSS(videoInfo.duration);
+    console.log(`動画時間` + apiDuration);
 
     return [true, apiLiveBroadcastContent, apiScheduledStartTime, apiActualStartTime, apiDuration];
   } else {
@@ -440,8 +439,7 @@ function updateChecker(data, channelIcon, discordChannelId) {
           isChanged = true;
 
           // 配信予定が変わっているか
-        } else if (apiLiveBroadcastContent == 'upcoming' &&
-                   formattedSheetScheduledStartTime !== apiScheduledStartTime) {
+        } else if (apiLiveBroadcastContent == 'upcoming' && formattedSheetScheduledStartTime !== apiScheduledStartTime) {
           description = description_text(
             apiLiveBroadcastContent,
             apiActualStartTime,
@@ -464,16 +462,7 @@ function updateChecker(data, channelIcon, discordChannelId) {
         }
 
         // 最新の情報をスプレッドシートに更新
-        updateVideoInfoInSheet(
-          apiTitle,
-          feedPublished,
-          feedUpdated,
-          feedVideoId,
-          apiLiveBroadcastContent,
-          apiScheduledStartTime,
-          apiActualStartTime,
-          apiDuration
-        );
+        updateVideoInfoInSheet(apiTitle, feedPublished, feedUpdated, feedVideoId, apiLiveBroadcastContent, apiScheduledStartTime, apiActualStartTime, apiDuration);
 
         // 変更があった場合のみDiscordに投稿
         if (isChanged) {
